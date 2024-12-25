@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="lib/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <title>p5-shape-table-generator</title>
     <style>
         body {
@@ -19,16 +21,27 @@
         canvas {
             display: block;
         }
-        button {
+        .controls {
             margin-top: 20px;
-            padding: 10px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .controls input, .controls button {
+            margin: 5px;
+            padding: 10px;
             font-size: 16px;
         }
     </style>
 </head>
 
 <body>
-    <button id="generateButton">Generate Shapes</button>
+    <div class="controls">
+        <label for="numShapes">Number of Shapes:</label>
+        <input type="number" id="numShapes" value="10">
+        <button id="generateButton">Generate Shapes</button>
+        <button id="showOneButton">Show One Shape</button>
+    </div>
     <script src="js/config.js"></script>
     <script src="js/shapeData.js"></script>
     <script src="js/shapeUtils.js"></script>
