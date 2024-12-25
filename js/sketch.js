@@ -1,15 +1,25 @@
 let shapeData;
 let centerX, centerY;
+let generateShapes = false;
 
 function setup() {
     pixelDensity(CONFIG.GENERATE.PIXEL_DENSITY);
     createCanvas(CONFIG.GENERATE.CANVAS_SIZE, CONFIG.GENERATE.CANVAS_SIZE);
     frameRate(CONFIG.GENERATE.FRAME_RATE);
+    noLoop(); // 初期状態ではループを停止
 
     shapeData = new ShapeData();
+
+    const button = select('#generateButton');
+    button.mousePressed(() => {
+        generateShapes = true;
+        loop(); // ボタンがクリックされたらループを開始
+    });
 }
 
 function draw() {
+    if (!generateShapes) return;
+
     const margin = (CONFIG.SCALE.MAX * CONFIG.GENERATE.CANVAS_SIZE) / 2;
     centerX = random(margin, width - margin);
     centerY = random(margin, height - margin);
@@ -22,6 +32,7 @@ function draw() {
         console.log("save success!!");
         shapeData.save();
         noLoop();
+        generateShapes = false;
     }
 }
 

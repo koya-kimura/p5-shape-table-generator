@@ -10,12 +10,25 @@
             margin: 0;
             padding: 0;
             background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        canvas {
             display: block;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
         }
     </style>
 </head>
 
 <body>
+    <button id="generateButton">Generate Shapes</button>
     <script src="js/config.js"></script>
     <script src="js/shapeData.js"></script>
     <script src="js/shapeUtils.js"></script>
