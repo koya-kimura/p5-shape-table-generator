@@ -1,15 +1,48 @@
 let shapeData;
 let centerX, centerY;
+let generateShapes = false;
+let showOneShape = false;
+let numShapes;
+let zip;
+let imgCount = 0;
 
 function setup() {
     pixelDensity(CONFIG.GENERATE.PIXEL_DENSITY);
     createCanvas(CONFIG.GENERATE.CANVAS_SIZE, CONFIG.GENERATE.CANVAS_SIZE);
     frameRate(CONFIG.GENERATE.FRAME_RATE);
+    noLoop(); // 初期状態ではループを停止
 
     shapeData = new ShapeData();
+
+    const generateButton = select('#generateButton');
+    generateButton.mousePressed(() => {
+        numShapes = int(select('#numShapes').value());
+        generateShapes = true;
+        showOneShape = false;
+        frameCount = 0;
+        imgCount = 0;
+        zip = new JSZip();
+        loop(); // ボタンがクリックされたらループを開始
+    });
+
+    const showOneButton = select('#showOneButton');
+    showOneButton.mousePressed(() => {
+        generateShapes = false;
+        showOneShape = true;
+        frameCount = 0;
+        loop(); // ボタンがクリックされたらループを開始
+    });
 }
 
 function draw() {
+    if (generateShapes) {
+        generateAndSaveShapes();
+    } else if (showOneShape) {
+        showSingleShape();
+    }
+}
+
+function generateAndSaveShapes() {
     const margin = (CONFIG.SCALE.MAX * CONFIG.GENERATE.CANVAS_SIZE) / 2;
     centerX = random(margin, width - margin);
     centerY = random(margin, height - margin);
@@ -18,10 +51,14 @@ function draw() {
     drawAndSaveShape(shapeParams);
     saveShapeData(shapeParams);
 
-    if (CONFIG.GENERATE.NUM < frameCount) {
+    if (numShapes < frameCount) {
         console.log("save success!!");
         shapeData.save();
+        zip.generateAsync({ type: "blob" }).then(function(content) {
+            saveAs(content, "shapes.zip");
+        });
         noLoop();
+        generateShapes = false;
     }
 }
 
@@ -34,7 +71,25 @@ function drawAndSaveShape(params) {
     strokeWeight(CONFIG.STYLE.STROKE_WEIGHT);
 
     drawShape(centerX, centerY, radius, params.vertices, params.angle);
-    saveCanvas(zeroPadding(frameCount), 'png');
+
+    // Save the canvas as an image and add it to the zip
+    const canvas = document.querySelector('canvas');
+    canvas.toBlob(function(blob) {
+        zip.file(zeroPadding(frameCount) + ".png", blob);
+        imgCount++;
+    });
+}
+
+function showSingleShape() {
+    const margin = (CONFIG.SCALE.MAX * CONFIG.GENERATE.CANVAS_SIZE) / 2;
+    centerX = random(margin, width - margin);
+    centerY = random(margin, height - margin);
+
+    const shapeParams = generateShapeParams();
+    drawShape(centerX, centerY, (shapeParams.scale * CONFIG.GENERATE.CANVAS_SIZE) / 2, shapeParams.vertices, shapeParams.angle);
+
+    noLoop();
+    showOneShape = false;
 }
 
 function saveShapeData(params) {
